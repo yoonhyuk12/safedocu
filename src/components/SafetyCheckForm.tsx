@@ -25,6 +25,8 @@ import {
   type InspectorAffiliation
 } from '../constants/checklistData';
 import jsPDF from 'jspdf';
+import { Menu } from 'lucide-react';
+import Sidebar from './Sidebar';
 
 interface ConstructionTypeListProps {
   types: readonly string[];
@@ -80,6 +82,7 @@ const SafetyCheckForm: React.FC = () => {
   const [isConstructionSectionCollapsed, setIsConstructionSectionCollapsed] = useState(false);
   const [isChecklistSectionCollapsed, setIsChecklistSectionCollapsed] = useState(true);
   const [isInspectorSectionCollapsed, setIsInspectorSectionCollapsed] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     constructionStatus: '',
     constructionCost: '',
@@ -181,9 +184,14 @@ const SafetyCheckForm: React.FC = () => {
   // 공사 여건 변경 감지 및 자동 접기
   useEffect(() => {
     if (isConstructionSettingsComplete) {
-      setIsConstructionSectionCollapsed(true);
-      // 공사 여건이 완료되면 체크리스트 섹션을 자동으로 펼침
-      setIsChecklistSectionCollapsed(false);
+      // 먼저 스크롤을 맨 위로 이동
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // 약간의 지연 후에 섹션 상태 변경
+      setTimeout(() => {
+        setIsConstructionSectionCollapsed(true);
+        setIsChecklistSectionCollapsed(false);
+      }, 300); // 스크롤 애니메이션이 완료될 시간을 주기 위해 지연
     }
   }, [isConstructionSettingsComplete]);
 
@@ -448,18 +456,27 @@ const SafetyCheckForm: React.FC = () => {
 
   return (
     <>
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-center gap-4">
+      <header className="fixed top-0 left-0 right-0 bg-white shadow-sm border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
             <img src="/KRCPNG.png" alt="한국농어촌공사 로고" className="h-8 w-auto" />
-            <h1 className="text-2xl font-bold text-[var(--apple-text)]">
+            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[var(--apple-text)] text-center">
               한국농어촌공사 안전서류 점검시스템
             </h1>
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="메뉴 열기"
+            >
+              <Menu size={24} />
+            </button>
           </div>
         </div>
       </header>
 
-      <div className="container">
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
+      <div className="container pt-24">
         {isConstructionSettingsComplete && isChecklistComplete && isInspectorInfoComplete && (
           <div className="sticky top-0 z-50 bg-white py-4 border-b border-gray-200 mb-6 animate-fade-in">
             <div className="flex justify-center gap-4">
@@ -562,9 +579,12 @@ const SafetyCheckForm: React.FC = () => {
             )}
           </div>
 
-          <div className={`card relative transition-all duration-500 ease-in-out ${
-            isChecklistSectionCollapsed ? 'order-3' : isConstructionSectionCollapsed ? 'order-1' : 'order-2'
-          }`}>
+          <div 
+            data-section="checklist"
+            className={`card relative transition-all duration-500 ease-in-out ${
+              isChecklistSectionCollapsed ? 'order-3' : isConstructionSectionCollapsed ? 'order-1' : 'order-2'
+            }`}
+          >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">안전서류 체크리스트</h2>
               <button
