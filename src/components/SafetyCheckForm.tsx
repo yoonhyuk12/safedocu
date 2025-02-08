@@ -214,14 +214,26 @@ const SafetyCheckForm: React.FC = () => {
            formData.inspectorAffiliation !== '';
   }, [formData.headquarters, formData.branch, formData.inspectorName, formData.inspectionDate, formData.projectName, formData.inspectorAffiliation]);
 
-  // 점검자 정보가 완료되면 자동으로 섹션을 접음
-  useEffect(() => {
-    if (isInspectorInfoComplete) {
-      setTimeout(() => {
-        setIsInspectorSectionCollapsed(true);
-      }, 500);
+  // 점검자 정보 섹션 클릭 핸들러
+  const handleInspectorSectionClick = (e: React.MouseEvent) => {
+    // 클릭된 요소가 입력 필드나 버튼이 아닐 때만 접기
+    if (
+      isInspectorInfoComplete &&
+      !(e.target instanceof HTMLInputElement) &&
+      !(e.target instanceof HTMLSelectElement) &&
+      !(e.target instanceof HTMLButtonElement) &&
+      !(e.target instanceof HTMLLabelElement)
+    ) {
+      setIsInspectorSectionCollapsed(true);
     }
-  }, [isInspectorInfoComplete]);
+  };
+
+  // 점검자 정보 입력 필드 키 입력 핸들러
+  const handleInspectorKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isInspectorInfoComplete) {
+      setIsInspectorSectionCollapsed(true);
+    }
+  };
 
   const generatePDF = async () => {
     try {
@@ -668,9 +680,12 @@ const SafetyCheckForm: React.FC = () => {
               </button>
             </div>
 
-            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-              isInspectorSectionCollapsed ? 'max-h-0 opacity-0' : 'max-h-[2000px] opacity-100'
-            }`}>
+            <div 
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                isInspectorSectionCollapsed ? 'max-h-0 opacity-0' : 'max-h-[2000px] opacity-100'
+              }`}
+              onClick={handleInspectorSectionClick}
+            >
               <div className="form-group">
                 <label>점검 대상 사업명</label>
                 <input
@@ -678,6 +693,7 @@ const SafetyCheckForm: React.FC = () => {
                   name="projectName"
                   value={formData.projectName}
                   onChange={handleChange}
+                  onKeyDown={handleInspectorKeyDown}
                   className="select-control placeholder-gray-400"
                   placeholder="예) 00지구 배수개선사업"
                 />
@@ -723,6 +739,7 @@ const SafetyCheckForm: React.FC = () => {
                     name="inspectorAffiliation"
                     value={formData.inspectorAffiliation}
                     onChange={handleChange}
+                    onKeyDown={handleInspectorKeyDown}
                     className="select-control"
                   >
                     <option value="">선택하세요</option>
@@ -739,6 +756,7 @@ const SafetyCheckForm: React.FC = () => {
                     name="inspectorName"
                     value={formData.inspectorName}
                     onChange={handleChange}
+                    onKeyDown={handleInspectorKeyDown}
                     className="select-control placeholder-gray-400"
                     placeholder="예) 4급 홍길동"
                   />
@@ -752,6 +770,7 @@ const SafetyCheckForm: React.FC = () => {
                   name="inspectionDate"
                   value={formData.inspectionDate}
                   onChange={handleChange}
+                  onKeyDown={handleInspectorKeyDown}
                   className="select-control"
                 />
               </div>
