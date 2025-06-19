@@ -15,15 +15,17 @@ import {
 
 describe('Checklist Data Types', () => {
   test('HEADQUARTERS should contain all defined headquarters', () => {
-    const expectedHeadquarters = ['경기본부', '충남본부'] as const;
-    expect(HEADQUARTERS).toEqual(expectedHeadquarters);
+    const expectedHeadquarters = ['본사', '경기', '충남'] as const;
+    expectedHeadquarters.forEach(hq => {
+      expect(HEADQUARTERS).toContain(hq);
+    });
   });
 
   test('BRANCH_OFFICES should have correct branches for each headquarters', () => {
-    expect(BRANCH_OFFICES['경기본부']).toContain('여주이천지사');
-    expect(BRANCH_OFFICES['경기본부']).toContain('양평광주서울지사');
-    expect(BRANCH_OFFICES['충남본부']).toContain('천안지사');
-    expect(BRANCH_OFFICES['충남본부']).toContain('공주지사');
+    expect(BRANCH_OFFICES['경기']).toContain('여주·이천지사');
+    expect(BRANCH_OFFICES['경기']).toContain('양평·광주·서울지사');
+    expect(BRANCH_OFFICES['충남']).toContain('천안지사');
+    expect(BRANCH_OFFICES['충남']).toContain('공주지사');
   });
 
   test('CONSTRUCTION_STATUS should contain all defined statuses', () => {

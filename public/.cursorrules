@@ -19,3 +19,4 @@
 ### Best Practices
 -   TypeScript 타입을 반드시 정의해야 함.
 -   재사용 가능하도록 컴포넌트를 설계해야 함.
+-   코드를 수정하고 배포 할때는, vercel deploy --prod 명령어를 사용한다.

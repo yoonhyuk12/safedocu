@@ -1,4 +1,8 @@
-import SafetyCheckForm from '@/components/SafetyCheckForm';
+import dynamic from 'next/dynamic';
+
+const SafetyCheckForm = dynamic(() => import('@/components/SafetyCheckForm'), {
+  ssr: false
+});
 
 export default function Home() {
   return (
